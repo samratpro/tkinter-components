@@ -198,7 +198,7 @@ def operation_start():
     app_pass = app_pass_entry.get()
     category_name = category.get()
     status_value = status.get()
-    keyword_list = keyword_input.get('1.0', END)
+    keyword_list = keyword_input.get('1.0', 'end-1c')
 
     output.insert(1.0, 'Website Name: ' + website_name + '\n')
     output.insert(1.0, 'User Name: ' + username + '\n')
