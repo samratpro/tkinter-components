@@ -1,10 +1,15 @@
 from customtkinter import *
+from PIL import ImageTk
+import os
 
 window = CTk()
 set_appearance_mode("System")
 set_default_color_theme("green")
 window.title("Automation App")
 window.geometry("1050x700")
+iconpath = ImageTk.PhotoImage(file=os.path.join("logo.png"))
+window.wm_iconbitmap()
+window.iconphoto(False, iconpath)
 
 # Create a Frame + Content Frame with scrollbar
 frame = CTkFrame(window)
