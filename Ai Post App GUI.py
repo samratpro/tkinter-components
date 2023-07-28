@@ -1,9 +1,14 @@
 from tkinter import *
 from tkinter import ttk, Label
+from PIL import ImageTk
+import os
 
 window = Tk()
 window.title("Automation App")
 window.geometry("1100x700")
+iconpath = ImageTk.PhotoImage(file=os.path.join("logo.png"))
+window.wm_iconbitmap()
+window.iconphoto(False, iconpath)
 
 
 # >>> Create a Frame + Content Frame with scrollbar .............
