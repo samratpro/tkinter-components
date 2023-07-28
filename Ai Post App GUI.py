@@ -63,8 +63,8 @@ category = Entry(webinfo_frame, width=20)
 category.insert(0, 'Category Name..')
 category.grid(row=1, column=3, pady=10, padx=10)
 
-status = ttk.Combobox(webinfo_frame, width=20, values=['Draft', 'Publish'], state='readonly')
-status.set('Draft')
+status = ttk.Combobox(webinfo_frame, width=20, values=['draft', 'publish'], state='readonly')
+status.set('draft')
 status.grid(row=1, column=4,pady=10, padx=10)
 
 
