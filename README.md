@@ -52,7 +52,7 @@ Now simply run for packing software
 ## Modify
 ```
 [Setup]
-; Custom Wizard Image
+; Custom Wizard Image, must be .bmp and ico format
 WizardImageFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\banner.bmp
 WizardSmallImageFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\wizard_small_icon.bmp
 SetupIconFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\logo.ico
