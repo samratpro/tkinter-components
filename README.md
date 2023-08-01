@@ -49,3 +49,13 @@ Defined that this file must be modified by user or software
 ```
 Now simply run for packing software
 ```
+## Modify
+```
+[Setup]
+; Custom Wizard Image
+WizardImageFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\banner.bmp
+WizardSmallImageFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\wizard_small_icon.bmp
+SetupIconFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\logo.ico
+
+
+```
