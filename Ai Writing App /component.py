@@ -110,10 +110,10 @@ def text_format(text, log):
         return ''
 
 
-def text_generate(prompt, engine, model_type, temp, log):
+def text_generate(prompt, engine, model_type, log, temp):
     if model_type == 'Regular':
         res = openai.Completion.create(model=engine.strip(), prompt=prompt, temperature=temp, max_tokens=2000,top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0,stop=['asdfasdf', 'asdasdf'])
-        text = res['choices'][0]['text'].strip()  # type: ignore
+        text = res['choices'][0]['text'].strip()
         print('Text render .................')
         log.insert(END, 'Text render .................\n')
         return text
@@ -124,24 +124,28 @@ def text_generate(prompt, engine, model_type, temp, log):
             result += choice.message.content
         return result
 
-
 def text_render(prompt, openai_key, engine, model_type, log, temp=0.7):
     openai.api_key = openai_key
-    try:
-        text = text_generate(prompt, engine, model_type, temp, log)
-        return text
-    except:
-        sleep(3)
+    sleep_sec = 0
+    attempts = 1
+    max_attempts = 4
+    while attempts < max_attempts:
         try:
-            text = text_generate(prompt, engine, model_type, temp, log)
-            return text
-        except:
-            sleep(6)
-            try:
-                text = text_generate(prompt, engine, model_type, temp, log)
-                return text
-            except:
-                return 'openaierror'
+            text = text_generate(prompt, engine, model_type, log, temp)
+            break
+        except Exception as Opps:
+            print(f"OpenAI Fail, trying {str(attempts + 1)} time...waiting time {str(sleep_sec)} seconds...")
+            print(f'Error Message from OpenAI Server : {str(Opps)}')
+            log.insert(END, f"OpenAI Fail, trying {str(attempts + 1)} time...waiting time {str(sleep_sec)} seconds...\n")
+            log.insert(END, f'Error Message from OpenAI Server : {str(Opps)}\n')
+            sleep(sleep_sec)
+            sleep_sec += 30
+            attempts += 1
+    else:
+        text = 'openaierror'
+        print("Maximum number of attempts reached. Operation failed...")
+        log.insert(END, "Maximum number of attempts reached. Operation failed...\n")
+    return text
 
 
 def formated_outline(keyword, outline_command, openai_key, engine_type, engine, log):
@@ -149,18 +153,21 @@ def formated_outline(keyword, outline_command, openai_key, engine_type, engine, 
         outline = text_render(outline_command.replace('((keyword))',keyword), openai_key,engine_type,engine, log)
         if 'h2' in outline or 'H2' in outline or outline == 'openaierror':
             break
-    outlines = list()
-    for line in outline.splitlines():
-        if len(line) > 1 and not 'introduction' in line.lower() and not 'objective' in line.lower() and not 'conclusion' in line.lower() and not 'overview' == line.lower():
-            if 'h2' in line.lower():
-                line_format = line.replace('H2','').replace('h2','').replace(':','').replace('-','').strip()
-                if len(line_format) > 0:
-                    outlines.append('<h2>'+line_format.capitalize()+'</h2>')
-            else:
-                line_format = line.replace('H3','').replace('h3','').replace(':','').replace('-','').strip()
-                if len(line_format) > 0:
-                    outlines.append('<h3>'+line_format.capitalize()+'</h3>')
-    return outlines
+    if outline != 'openaierror':
+        outlines = list()
+        for line in outline.splitlines():
+            if len(line) > 1 and not 'introduction' in line.lower() and not 'objective' in line.lower() and not 'conclusion' in line.lower() and not 'overview' == line.lower():
+                if 'h2' in line.lower():
+                    line_format = line.replace('H2','').replace('h2','').replace(':','').replace('-','').strip()
+                    if len(line_format) > 0:
+                        outlines.append('<h2>'+line_format.capitalize()+'</h2>')
+                else:
+                    line_format = line.replace('H3','').replace('h3','').replace(':','').replace('-','').strip()
+                    if len(line_format) > 0:
+                        outlines.append('<h3>'+line_format.capitalize()+'</h3>')
+        return outlines
+    else:
+        return 'outlineerror'
 
 
 def content_body(keyword, para_command, outline_command, openai_key, engine, engine_type, json_url,headers, body_img_status, log):
@@ -171,28 +178,30 @@ def content_body(keyword, para_command, outline_command, openai_key, engine, eng
     log.insert(END, f'{outlines}\n')
     prompt_remember = ''
     content_body_data = ''
-    for heading in outlines:
-        prompt_remember += heading
-        if 'h2' in heading.lower():
-            clean_heading = heading.replace('H2', '').replace('h2', '').replace(':', '').replace('-', '').replace('/','').replace('<', '').replace('>', '').replace('Step', '').strip()
-            print(f'Para Section H2 : {heading} .................')
-            log.insert(END, f'Para Section H2 : {heading} .................\n')
+    if outlines != 'outlineerror':
+        for heading in outlines:
+            prompt_remember += heading
+            if 'h2' in heading.lower():
+                clean_heading = heading.replace('H2', '').replace('h2', '').replace(':', '').replace('-', '').replace('/','').replace('<', '').replace('>', '').replace('Step', '').strip()
+                print(f'Para Section H2 : {heading} .................')
+                log.insert(END, f'Para Section H2 : {heading} .................\n')
 
-            body_img_src = body_img(clean_heading.strip() + ' of '+keyword.strip(),json_url,headers, body_img_status, log)
-            section = text_format(text_render(para_command.replace('((previous_data))', prompt_remember).replace('((keyword))', keyword).replace('((heading))',clean_heading), openai_key, engine, engine_type, log), log)
-            prompt_remember = section
-            content_body_data += heading + body_img_src + section
-        else:
-            print(f'Para Section H3 : {heading}.................')
-            log.insert(END, f'Para Section H3 : {heading}.................\n')
-            clean_heading = heading.replace('H3', '').replace('h3', '').replace(':', '').replace('-', '').replace('/','').replace('<', '').replace('>', '').replace('H4','').replace('h4','').replace('Step','').strip()
-            section = text_format(text_render(para_command.replace('((previous_data))', prompt_remember).replace('((keyword))', keyword).replace('((heading))',clean_heading), openai_key, engine, engine_type, log), log)
-            prompt_remember = section
-            content_body_data += heading + section
-    print('Content body done .................')
-    log.insert(END, f'Content body done .................\n')
-    return content_body_data
-
+                body_img_src = body_img(clean_heading.strip() + ' of '+keyword.strip(),json_url,headers, body_img_status, log)
+                section = text_format(text_render(para_command.replace('((previous_data))', prompt_remember).replace('((keyword))', keyword).replace('((heading))',clean_heading), openai_key, engine, engine_type, log), log)
+                prompt_remember = section
+                content_body_data += heading + body_img_src + section
+            else:
+                print(f'Para Section H3 : {heading}.................')
+                log.insert(END, f'Para Section H3 : {heading}.................\n')
+                clean_heading = heading.replace('H3', '').replace('h3', '').replace(':', '').replace('-', '').replace('/','').replace('<', '').replace('>', '').replace('H4','').replace('h4','').replace('Step','').strip()
+                section = text_format(text_render(para_command.replace('((previous_data))', prompt_remember).replace('((keyword))', keyword).replace('((heading))',clean_heading), openai_key, engine, engine_type, log), log)
+                prompt_remember = section
+                content_body_data += heading + section
+        print('Content body done .................')
+        log.insert(END, f'Content body done .................\n')
+        return content_body_data
+    else:
+        return 'contenbodyerror'
 
 def create_category(cat_name, json_url, headers):
     id = 0
@@ -231,14 +240,14 @@ def faq(keyword, faq_command, faq_ans_command, openai_key, engine, enine_type, l
     try:
         questions = people_also_ask.get_related_questions(keyword, 5)
     except:
-        outline = text_render(faq_command.replace('((keyword))',keyword), openai_key, engine, enine_type)
+        outline = text_render(faq_command.replace('((keyword))',keyword), openai_key, engine, enine_type, log)
         questions = outline.splitlines()
     faq_body = ''
     schema = '<script type="application/ld+json">{"@context":"https://schema.org","@type": "FAQPage","mainEntity":['
     for q in questions:
         q_filter = re.sub(r'[0-9]. ','', q)
         q_h3 = '<strong>'+q_filter.title()+'</strong>'
-        q_body_raw = text_render(faq_ans_command.replace('((faq_question))',q_filter.replace('"','')), openai_key, engine, enine_type)
+        q_body_raw = text_render(faq_ans_command.replace('((faq_question))',q_filter.replace('"','')), openai_key, engine, enine_type, log)
         q_body = '<!-- wp:paragraph --><p>'+q_body_raw+'</p><!-- /wp:paragraph -->'
         faq_body += q_h3 + q_body
         question = '{"@type": "Question","name": "'+q_filter.replace('"','').title()+'",'
