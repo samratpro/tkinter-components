@@ -1,5 +1,3 @@
-
-# cron.py
 from component import *
 from customtkinter import *
 import sqlite3
@@ -78,7 +76,7 @@ if data_check == None:
 window = CTk()
 set_default_color_theme("green")
 set_appearance_mode("light")
-window.title("AI Writing App by Samrat ( fb.com/samratprobd )")
+window.title("AI Writing App by Samrat Biswas")
 window.geometry("1050x700")
 iconpath = ImageTk.PhotoImage(file=os.path.join("logo.ico"))
 window.wm_iconbitmap()
@@ -436,26 +434,31 @@ def operation_start_thread():
 
                 post_body = introduction + img_source + content_body(keyword, para_command, outline_command, openai_key, engine,engine_type,json_url,headers, body_img_status, log) + youtubevid(keyword, youtube_key, youtube_status, log) + "<h2> FAQ's </h2>" + faq(keyword, faq_command, faq_ans_command, openai_key, engine, engine_type, log) + '<h2>Conclusion</h2>' + conclusion_para
 
-                category_id = create_category(category_name, json_url, headers)
-                title = text_render(title_command.replace('((keyword))',keyword), openai_key, engine, engine_type, log, 0.3).replace('"','').title()
-                slug = keyword.replace(' ', '-')
+                if post_body != 'contenbodyerror':
+                    category_id = create_category(category_name, json_url, headers)
+                    title = text_render(title_command.replace('((keyword))',keyword), openai_key, engine, engine_type, log, 0.3).replace('"','').title()
+                    slug = keyword.replace(' ', '-')
 
-                # Post Data
-                if category_id == 0:
-                    post = {'title': title,'slug': slug,'status': status_value,'content': post_body,'format': 'standard','excerpt': excerpt,'featured_media': int(image_id)}
+                    # Post Data
+                    if category_id == 0:
+                        post = {'title': title,'slug': slug,'status': status_value,'content': post_body,'format': 'standard','excerpt': excerpt,'featured_media': int(image_id)}
+                    else:
+                        post = {'title': title,'slug': slug,'status': status_value,'content': post_body,'categories': [category_id],'format': 'standard','excerpt': excerpt,'featured_media': int(image_id)}
+
+
+                    # Posting Request
+                    r = requests.post(json_url + '/posts', headers=headers, json=post)
+                    if r.status_code == 201:
+                        output.insert(END, ''+str(i)+'. Keyword: ' + keyword + '\n')
+                        print('completed, kw:', keyword)
+                        log.insert(END, f'completed, kw: {keyword}')
+                    else:
+                        output.insert(END, str(f'{str(i)} . {keyword}, WP Error, Status Code is : {r.status_code}\n'))
+                    sleep(10)
+                    shutil.rmtree('bulkimg')
                 else:
-                    post = {'title': title,'slug': slug,'status': status_value,'content': post_body,'categories': [category_id],'format': 'standard','excerpt': excerpt,'featured_media': int(image_id)}
+                    output.insert(END, str(f'{str(i)} . {keyword}, **OpenAI API error...\n'))
 
-
-                # Posting Request
-                r = requests.post(json_url + '/posts', headers=headers, json=post)
-                if r.status_code == 201:
-                    output.insert(END, ''+str(i)+'. Keyword: ' + keyword + '\n')
-                    print('completed, kw:', keyword)
-                else:
-                    output.insert(END, str(f'{str(i)} . {keyword}, WP Error, Status Code is : {r.status_code}\n'))
-                sleep(10)
-                shutil.rmtree('bulkimg')
 
             else:
                 output.insert(END, str(f'{str(i)} . {keyword}, **OpenAI API error...\n'))
