@@ -1,4 +1,5 @@
 # Packaging For Windows
+## Generate Portable exe file
 ### Install Packages
 ```
 pip install pyinstaller
@@ -25,4 +26,26 @@ example path is:  C:\Users\pc\AppData\Local\Programs\Python\Python311\Lib\site-p
 After completing all click on generate .PY To Exe button, also we can modify the output folder from setting
 ```
 
+## Packging
+```
+install inno setup software: https://jrsoftware.org/isdl.php
+Open Software, and create a new "Script with setup Wizard" input one by one data
+```
+### Modify Some codes after setup Wizard
+```
+[Setup]
+DefaultDirName={userappdata}\{#MyAppName}   # Chanage install Dir " Program File (x86) " to "Appdata" folder
+DisableDirPage=no                           # For this also user can change dir while installing software
 
+" Program File (x86) " can't modify the database
+
+[Files]
+Source: "C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\postdb.db"; DestDir: "{commonappdata}\{#MyAppName}"; Flags: ignoreversion; Permissions: users-modify
+
+Defined that this file must be modified by user or software
+
+```
+### Run 
+```
+Now simply run for packing software
+```
