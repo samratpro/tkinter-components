@@ -54,6 +54,10 @@ WizardSmallImageFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\
 SetupIconFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\logo.ico
 
 
+# Banner WizardImageFile = 202 X 386
+# WizardSmallImageFile = 56 X 58 
+
+
 ```
 ### Run 
 ```
