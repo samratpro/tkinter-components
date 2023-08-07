@@ -45,10 +45,6 @@ Source: "C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\postdb.db"; 
 Defined that this file must be modified by user or software
 
 ```
-### Run 
-```
-Now simply run for packing software
-```
 ## Modify
 ```
 [Setup]
@@ -58,4 +54,8 @@ WizardSmallImageFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\
 SetupIconFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\logo.ico
 
 
+```
+### Run 
+```
+Now simply run for packing software
 ```
