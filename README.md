@@ -55,7 +55,9 @@ SetupIconFile=C:\Users\pc\Desktop\tkinter_practice\AIWritting App\output\logo.ic
 
 
 # Banner WizardImageFile = 202 X 386
-# WizardSmallImageFile = 56 X 58 
+# WizardSmallImageFile = 56 X 58
+
+UninstallFilesDir=Uninstall\exe\{#NAME_OF_APP}
 
 
 ```
