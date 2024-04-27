@@ -320,27 +320,43 @@ def db_save():
     conclusion_command = str(conclusion_generator.get('1.0', 'end-1c'))
     except_command = str(excerpt_generator.get('1.0', 'end-1c'))
     title_command = str(title_generator.get('1.0', 'end-1c'))
-    cur.execute(f'''
-                    UPDATE Postdata
-                    SET
-                        Website_name= "{website_name}",
-                        User_name = "{username}",
-                        App_pass = "{app_pass}",
-                        Category_name = "{category_name}",
-                        Openai_api = "{openai_key}",
-                        Openai_model = "{model}",
-                        Youtube_api = "{youtube_key}",
-                        Outline_generator = "{outline_command}",
-                        Intro_generator = "{intro_command}",
-                        PARA_generator = "{para_command}",
-                        faq_generator = "{faq_command}",
-                        faq_ans = "{faq_ans_command}",
-                        conclusion_generator = "{conclusion_command}",
-                        excerpt_generator = "{except_command}",
-                        title_generator = "{title_command}"
-                    WHERE ID = 1
-                    
-                    ''')
+cur.execute('''
+    UPDATE Postdata
+    SET
+        Website_name = ?,
+        User_name = ?,
+        App_pass = ?,
+        Category_name = ?,
+        Openai_api = ?,
+        Openai_model = ?,
+        Youtube_api = ?,
+        Outline_generator = ?,
+        Intro_generator = ?,
+        PARA_generator = ?,
+        faq_generator = ?,
+        faq_ans = ?,
+        conclusion_generator = ?,
+        excerpt_generator = ?,
+        title_generator = ?
+    WHERE ID = 1
+''', (
+    website_name,
+    username,
+    app_pass,
+    category_name,
+    openai_key,
+    model,
+    youtube_key,
+    outline_command,
+    intro_command,
+    para_command,
+    faq_command,
+    faq_ans_command,
+    conclusion_command,
+    except_command,
+    title_command
+))
+
 
 def reset_data():
     cur.execute('''
